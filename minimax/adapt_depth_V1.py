@@ -38,7 +38,7 @@ class MinimaxAgent(Agent):
         # always start as MAX ? -> yes because we are the ones choosing the move
         depth = 0 # to track depth
         global SEARCH_DEPTH
-        SEARCH_DEPTH = adapth_depth(state, remaining_time) # to adjust depth limit based on time remaining and game state
+        SEARCH_DEPTH = adapt_depth(state, remaining_time) # to adjust depth limit based on time remaining and game state
         _, best_move = self.max_value(state, depth)
         return best_move
 
@@ -142,33 +142,27 @@ def evaluate(state, player):
     return 1
 
 
-def adapth_depth(state, remaining_time):
-    # idée : ajuster la profondeur de recherche en fonction du temps restant, du nombre de pièces déjà passées et de la valeur de la fonction d'évaluation de l'état
-    # => pour éviter de perdre du temps à rechercher trop loin dans le futur quand on a peu de temps ou quand l'état est déjà très favorable ou défavorable
+def adapt_depth(state, remaining_time):
+    "Ajustement dynamique mais avec des valeurs arbitraires pour l'instant, à améliorer"
 
-    # pour le moment valeurs arbitraires, à ajuster
+    played = number_of_plays(state)
 
-    # si premier coup : faire un choix aléatoire pour gagner du temps
-    if number_of_plays(state) == 0:
-        return 1
+    # si presque plus de temps, on doit pas perdre de temps
+    if remaining_time < 10:
+        return 3
 
-    # ajustement en fonction du temps restant
-    if remaining_time < 10:  # si moins de 10 secondes restantes, on réduit la profondeur de recherche => pas le temps de chercher loin dans l'arbre
-        return 1
-
-
-    if number_of_plays(state) < 5: # si moins de 10 pièces déjà passées, on peut se permettre de chercher un peu plus loin pour trouver des coups gagnants ou éviter des coups perdants
+    # assez tôt, beaucoup de possibilités, on doit pas perdre de temps à explorer trop profondément
+    if played < 10:
         return 4
 
-
-    # si bien avancé dans le jeu mais pas encore trop proche de la fin : on peut se permettre de chercher un peu plus loin pour trouver des coups gagnants ou éviter des coups perdants
-    if number_of_plays(state) > 5 and number_of_plays(state) < 40: # si entre 10 et 40 pièces déjà passées, on peut se permettre de chercher un peu plus loin
+    # une fois plus de pièces posées, moins de possibilités. On peut rechercher plus en profondeur
+    if played < 24:
         return 5
 
-
-    return 2 # sinon, on cherche à une profondeur de 2 pour gagner du temps
+    # vers la fin : peu de possibilités, on peut se permettre de rechercher plus en profondeur pour trouver le meilleur coup
+    return 6
 
 
 def number_of_plays(state):
-    # number of cells that are not None (i.e. that contain a piece)
-    return sum(1 for cell in state.board if cell is not None)
+
+    return sum(1 for row in state.board for cell in row if cell is not None)
