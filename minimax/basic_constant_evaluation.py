@@ -1,9 +1,6 @@
 from agent import Agent
 from oxono import Game
-import random
 
-
-# mettre explications dans docstrings
 
 # Depth limit for Minimax search.
 SEARCH_DEPTH = 2 # -> peut être ajusté. Faire comparaisons entre différentes valeurs pour un compromis qualité - vitesse ?
@@ -141,5 +138,3 @@ class MinimaxAgent(Agent):
 def evaluate(state, player):
     # return constant ? -> est-ce que ça va marcher ? à améliorer
     return 1
-
-
