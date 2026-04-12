@@ -138,7 +138,8 @@ class MinimaxAgent(Agent):
 
 
 def evaluate(state, player):
-    # return constant ? -> est-ce que ça va marcher ? à améliorer
+    # return constant ? ->  Il faut d'office quelque chose de basique mais pas une constante, sinon on perdrait du temps à
+    # explorer le même nombre de noeuds à chaque fois, sans jamais pouvoir différencier les coups.
     return 1
 
 
