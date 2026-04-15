@@ -222,7 +222,9 @@ def score_color_window(window, color_player, sign):
     Score window of 4 cells (does not matter if vertical or horizontal, they are passed as 4 values) for a player's color.
     Gives a score to a window that can be completed (no pieces of the opponent's color).
     """
-    weights = {3: 500, 2: 10, 1: 1} # autres valeurs, 3 -> très bon ou trè dangereux, 1 -> sert à quelque chose de mettre une veleur ?
+    weights = {3: 0.8, 2: 0.1}
+    # mettre un poids plus lourd sur le gain ou la perte => orienter l'agent vers la mise en avantage d'une victoire ou le contre d'une victoire de l'adversaire
+    # changer les poids ? -> faire des simulation de quels poids sont plus intéressants (script faisant tourner plusieurs partie, pour des poids différents, pour des temps différents)
 
     opponent = 1 - color_player
 
