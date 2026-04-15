@@ -147,21 +147,26 @@ def adapt_depth(state, remaining_time):
     "Ajustement dynamique mais avec des valeurs arbitraires pour l'instant, à améliorer"
 
     played = number_of_plays(state)
+    print("adapt depth : ", played, remaining_time)
 
     # si presque plus de temps, on doit pas perdre de temps
     if remaining_time < 10:
-        return 3
+        return 2
 
     # assez tôt, beaucoup de possibilités, on doit pas perdre de temps à explorer trop profondément
     if played < 10:
-        return 4
+        print("early game")
+        return 3
 
     # une fois plus de pièces posées, moins de possibilités. On peut rechercher plus en profondeur
     if played < 24:
-        return 5
+        return 4
 
     # vers la fin : peu de possibilités, on peut se permettre de rechercher plus en profondeur pour trouver le meilleur coup
-    return 6
+    if played > 30 :
+        return 6
+
+    return 5
 
 
 def number_of_plays(state):

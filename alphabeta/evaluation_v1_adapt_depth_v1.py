@@ -2,17 +2,26 @@ from agent import Agent
 from oxono import Game
 
 
-# Depth limit for Minimax search.
-SEARCH_DEPTH = 2 # -> peut être ajusté. Faire comparaisons entre différentes valeurs pour un compromis qualité - vitesse ?
-# améliorations : ajustement dynamique en fonction du temps restant, du nombre de pièces déjà passées, de la valeur de la fonction d'évaluation, ...
+# Depth limit for Alpha-Beta search.
+# Alpha-Beta prunes des branches -> on peut se permettre d'explorer plus profondément que minimax
+SEARCH_DEPTH = 4
 
 
-class MinimaxAgent(Agent):
+class AlphaBetaAgent(Agent):
     """
-    Oxono agent using the Minimax algorithm. Based on the pseudo-code from the lectures. Available in
-    "Artificial intelligence : a modern approach" by Russell and Norvig, fourth edition, chapter 6, page 196.
+    Oxono agent using the Alpha-Beta pruning algorithm. Based on the pseudo-code from the lectures.
+    Available in "Artificial intelligence : a modern approach" by Russell and Norvig,
+    fourth edition, chapter 6, page 200.
 
-    The algorithm explores the game tree up to SEARCH_DEPTH, then give scores to non-terminal states with a heuristic evaluation function.
+    Very similar to Minimax, it only adds the principle of prunng to avoid searching branches that won't be chosen by rational players.
+
+
+    It tracks two values :
+        alpha : the best score MAX is already guaranteed (starts at -∞)
+        beta  : the best score MIN is already guaranteed (starts at +∞)
+
+        In MAX-VALUE: if v >= beta  → stop (MIN would never allow this branch)
+        In MIN-VALUE: if v <= alpha → stop (MAX would never choose this branch)
     """
 
     def __init__(self, player):
@@ -22,58 +31,59 @@ class MinimaxAgent(Agent):
     def act(self, state, remaining_time):
         """
         from the pseudo-code:
-            player<- game.TO-MOVE(state) => needed ? -> No because we are always MAX
-            value, move <- MAX-VALUE(game,state)
+            player <- game.TO-MOVE(state)
+            value, move <- MAX-VALUE(game, state, -∞, +∞)
             return move
 
         Parameters
         ----------
         state          : current game state
-        remaining_time : seconds left on our clock for the whole game -> need to be used
+        remaining_time : seconds left on our clock for the whole game
 
         Returns
         -------
-        The best action found by Minimax at depth SEARCH_DEPTH.
+        The best action found by Alpha-Beta at depth SEARCH_DEPTH.
         """
-        # always start as MAX ? -> yes because we are the ones choosing the move
-        depth = 0 # to track depth
+
+        depth = 0
         global SEARCH_DEPTH
-        SEARCH_DEPTH = adapt_depth(state,remaining_time)
-        _, best_move = self.max_value(state, depth)
+        SEARCH_DEPTH = adapt_depth(state, remaining_time)
+        _, best_move = self.max_value(state, depth, alpha=float('-inf'), beta=float('+inf')) # alpha and beta initialosed
         return best_move
 
 
-    def max_value(self, state, depth):
+    def max_value(self, state, depth, alpha, beta):
         """
-        from the pseudocode:
+        from the pseudo-code:
 
             if game.IS-TERMINAL(state) then return game.UTILITY(state, player), null
             v, move <- −∞
             for each a in game.ACTIONS(state) do
-                v2, a2 <- MIN-VALUE(game, game.RESULT(state, a))
+                v2, a2 <- MIN-VALUE(game, game.RESULT(state, a), alpha, beta)
                 if v2 > v then
                     v, move <- v2, a
+                    alpha <- MAX(alpha, v)
+                if v >= beta then return v, move   ← PRUNING: MIN will never allow this
             return v, move
 
-        We add a depth limit: when depth reaches 0 on a non-terminal state,
-        we call the heuristic instead of recursing further.
+        Parameters
+        ----------
+        state : current game state
+        depth : current depth in the tree (incremented at each recursive call)
+        alpha : best score MAX is already guaranteed on the path to the root
+        beta  : best score MIN is already guaranteed on the path to the root
 
         Returns
         -------
         (score, action) : best score achievable and the move that leads to it.
                           action is None at terminal/leaf nodes.
         """
-
-
-        # if terminal state: return true utility
         if Game.is_terminal(state):
             return Game.utility(state, self.player), None
 
-        # if depth limit reached: estimate with heuristic
         if depth == SEARCH_DEPTH:
             return evaluate(state, self.player), None
 
-        # else: look for the highest score among possible actions
         v = float('-inf')
         best_move = None
 
@@ -81,43 +91,55 @@ class MinimaxAgent(Agent):
             next_state = state.copy()
             Game.apply(next_state, action)
 
-            # Recurse into MIN
-            v2, _ = self.min_value(next_state, depth + 1)
+            v2, _ = self.min_value(next_state, depth + 1, alpha, beta)
 
             # Keep track of the best score
             if v2 > v:
                 v = v2
                 best_move = action
 
+            # Update alpha
+            alpha = max(alpha, v)
+
+            # Puning
+            if v >= beta:
+                return v, best_move
+
         return v, best_move
 
 
-    def min_value(self, state, depth):
+    def min_value(self, state, depth, alpha, beta):
         """
-        from the pseud-ocode:
+        from the pseudo-code:
 
             if game.IS-TERMINAL(state) then return game.UTILITY(state, player), null
             v, move <- +∞
             for each a in game.ACTIONS(state) do
-                v2, a2 <- MAX-VALUE(game, game.RESULT(state, a))
+                v2, a2 <- MAX-VALUE(game, game.RESULT(state, a), alpha, beta)
                 if v2 < v then
                     v, move <- v2, a
+                    beta <- MIN(beta, v)
+                if v <= alpha then return v, move   ← PRUNING: MAX will never choose this
             return v, move
+
+        Parameters
+        ----------
+        state : current game state
+        depth : current depth in the tree (incremented at each recursive call)
+        alpha : best score MAX is already guaranteed on the path to the root
+        beta  : best score MIN is already guaranteed on the path to the root
 
         Returns
         -------
         (score, action) : lowest score the opponent can force and the move
                           that achieves it. action is None at terminal/leaf nodes.
         """
-        # if terminal state: return true utility
         if Game.is_terminal(state):
             return Game.utility(state, self.player), None
 
-        # if depth limit reached: estimate with heuristic
         if depth == SEARCH_DEPTH:
             return evaluate(state, self.player), None
 
-        # else
         v = float('+inf')
         best_move = None
 
@@ -125,13 +147,19 @@ class MinimaxAgent(Agent):
             next_state = state.copy()
             Game.apply(next_state, action)
 
-            # Recurse into MAX
-            v2, _ = self.max_value(next_state, depth + 1)
+            v2, _ = self.max_value(next_state, depth + 1, alpha, beta)
 
             # Keep track of the best score
             if v2 < v:
                 v = v2
                 best_move = action
+
+            # Update beta
+            beta = min(beta, v)
+
+            # Pruning
+            if v <= alpha:
+                return v, best_move
 
         return v, best_move
 
@@ -144,22 +172,22 @@ def adapt_depth(state, remaining_time):
 
     # si presque plus de temps, on doit pas perdre de temps
     if remaining_time < 10:
-        return 2
+        return 3
 
     # assez tôt, beaucoup de possibilités, on doit pas perdre de temps à explorer trop profondément
     if played < 10:
         print("early game")
-        return 3
+        return 4
 
     # une fois plus de pièces posées, moins de possibilités. On peut rechercher plus en profondeur
     if played < 24:
-        return 4
+        return 5
 
     # vers la fin : peu de possibilités, on peut se permettre de rechercher plus en profondeur pour trouver le meilleur coup
     if played > 30 :
-        return 6
+        return 7
 
-    return 5
+    return 6
 
 
 def number_of_plays(state):
@@ -235,6 +263,3 @@ def score_color_window(window, color_player, sign):
         return 0
 
     return sign * weights.get(my_count,0) # sign multiplies the value by +1 if it's good for us, -1 if it's good for the opponent
-
-
-# CRASH dès le début...
