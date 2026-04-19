@@ -123,6 +123,8 @@ class MCTSAgent(Agent):
     def __init__(self, player):
         super().__init__(player)
 
+        self.first_time = True
+
     def act(self, state, remaining_time):
         """
         Run MCTS for TIME_PER_MOVE seconds, returns the best action found.
@@ -136,6 +138,16 @@ class MCTSAgent(Agent):
         -------
         tuple : the action of the most-visited child of the root
         """
+        # if first time, set the time allowed per move by dividing the remaining time by the number of moves possible (34 -> 36 - 2 last plays)
+        # TODO -> better time allocation ?
+        if self.first_time:
+            global TIME_PER_MOVE
+            TIME_PER_MOVE -= 1 # reserve 1 second in case code outside of act() takes time
+            TIME_PER_MOVE = remaining_time / 34
+            self.first_time = False
+
+
+
         # Build the root node for this turn
         root = MCTSNode(state=state.copy(), parent=None, action=None, player=None)
 
