@@ -10,7 +10,7 @@ from oxono import Game
 # Time budget reserved per move (seconds).
 #TODO -> other fixed times
 #TODO -> dynamic time allocation
-TIME_PER_MOVE = 1.0
+TIME_PER_MOVE = 2.0
 
 
 
