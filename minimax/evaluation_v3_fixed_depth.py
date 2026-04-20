@@ -3,7 +3,7 @@ from oxono import Game
 
 
 # Depth limit for Minimax search.
-SEARCH_DEPTH = 2 # -> peut être ajusté. Faire comparaisons entre différentes valeurs pour un compromis qualité - vitesse ?
+SEARCH_DEPTH = 3 # -> peut être ajusté. Faire comparaisons entre différentes valeurs pour un compromis qualité - vitesse ?
 # améliorations : ajustement dynamique en fonction du temps restant, du nombre de pièces déjà passées, de la valeur de la fonction d'évaluation, ...
 
 
@@ -48,8 +48,6 @@ class MinimaxAgent(Agent):
         """
         # always start as MAX ? -> yes because we are the ones choosing the move
         depth = 0 # to track depth
-        global SEARCH_DEPTH
-        SEARCH_DEPTH = adapt_depth(state, remaining_time)
         _, best_move = self.max_value(state, depth)
         return best_move
 
@@ -178,32 +176,6 @@ class MinimaxAgent(Agent):
         return score
 
 
-def adapt_depth(state, remaining_time):
-    "Ajustement dynamique mais avec des valeurs arbitraires pour l'instant, à améliorer"
-
-    played = number_of_plays(state)
-    print("adapt depth : ", played, remaining_time)
-
-    # si presque plus de temps, on doit pas perdre de temps
-    if remaining_time < 10:
-        return 2
-
-    # assez tôt, beaucoup de possibilités, on doit pas perdre de temps à explorer trop profondément
-    if played < 10:
-        print("early game")
-        return 3
-
-    # une fois plus de pièces posées, moins de possibilités. On peut rechercher plus en profondeur
-    if played < 24:
-        return 4
-
-    # vers la fin : peu de possibilités, on peut se permettre de rechercher plus en profondeur pour trouver le meilleur coup
-    if played > 30 :
-        return 6
-
-    return 5
-
-
 def number_of_plays(state):
     return sum(1 for row in state.board for cell in row if cell is not None)
 
@@ -211,7 +183,7 @@ def number_of_plays(state):
 # Attribue un score à une fenêtre selon le nombre de symboles (X ou O) présents.
 def score_color_window(window, color_player, sign):
     # Poids de plus en plus élevées pour privilégier la victoire immédiate
-    weights = {4: 100, 3: 10, 2: 1}
+    weights = {3: 0.8, 2: 0.25}
     opponent = 1 - color_player
 
     my_count = 0
@@ -236,7 +208,7 @@ def score_color_window(window, color_player, sign):
 # Attribue un score à une fenêtre selon le nombre de symboles (X ou O) présents.
 def score_symbol_window(window, symbol):
     # Les symboles ont moins de poids car tout le monde peut gagner avec
-    weights = {4: 50, 3: 5, 2: 0.5}
+    weights = {3: 0.4, 2: 0.125}
     count = 0
     
     for cell in window:
