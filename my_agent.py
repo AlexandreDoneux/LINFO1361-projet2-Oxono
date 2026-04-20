@@ -5,18 +5,50 @@ import time
 from agent import Agent
 from oxono import Game
 
-
-
 # Time budget reserved per move (seconds).
-#TODO -> other fixed times
 #TODO -> dynamic time allocation
-TIME_PER_MOVE = 1.0
+MINIMUM_TIME_PER_MOVE = 1.0
+TIME_PERCENT_OF_REMAINING = 0.05 # 5% of remaining time for this move, can be changed later
 
+
+
+def simple_hash(state):
+    """
+    Compute  hash for the game state.
+    #TODO -> use zobrist hash ? Better in what way ?
+
+    Encodes:
+      - every piece on the board (row, col, symbol, player)
+      - totem positions
+      - whose turn it is
+
+    Returns:
+        int: hash key (Python's built‑in hash of a tuple)
+    """
+    pieces = []  # list of (row, col, symbol, player)
+    for r in range(6):
+        for c in range(6):
+            cell = state.board[r][c]
+            if cell is not None:
+                symbol, player = cell
+                pieces.append((r, c, symbol, player))
+
+    # Build a tuple that fully describes the state
+    key_tuple = (
+        tuple(pieces),                    # every piece
+        state.totem_O,                    # (r,c) of O‑totem
+        state.totem_X,                    # (r,c) of X‑totem
+        state.current_player              # 0 or 1
+    )
+
+    # Use Python’s built‑in hash; fast and deterministic per run
+    return hash(key_tuple)
 
 
 class MCTSNode:
     """
     Node in the MCTS search tree. Represents a gme state and tracks all related information needed for MCTS (visits, wins).
+    Each node now also stores its Zobrist hash to enable quick lookups in the transposition table.
 
     Attributes
     ----------
@@ -29,6 +61,7 @@ class MCTSNode:
     untried_actions : actions not yet expanded into children
     visits       : number of times this node has been visited
     wins         : number of simulations won by `player` through this node
+    hash         : Zobrist hash of this node's state (pre-computed once)
     """
 
     def __init__(self, state, parent=None, action=None, player=None):
@@ -43,6 +76,9 @@ class MCTSNode:
         # visits and wins are initialized to 0 and updated during backpropagation
         self.visits          = 0
         self.wins            = 0
+
+        # compute the hash once at creation so no need to recompute later
+        self.hash            = simple_hash(state)
 
     def is_fully_expanded(self):
         """Return True when no more legal actions are left from this node."""
@@ -71,12 +107,14 @@ class MCTSNode:
         exploitation = self.wins / self.visits
         exploration  = math.sqrt(2) * math.sqrt(math.log(self.parent.visits) / self.visits) # confidence measure set to sqrt(2) (comon choice
         return exploitation + exploration
-    # CHECK IF WORKS CORRECTLY
+    # CHECK IF WORKS CORRECTLY -> looks ok
 
     def best_child(self):
         """
         Returns the child with highest UCB1 score.
         """
+        if not self.children:
+            return None  # if no children, can happen if the copy of "untried_actions" from the transposition table is empty
         return max(self.children, key=lambda c: c.ucb1())
 
     def best_action_child(self):
@@ -85,12 +123,25 @@ class MCTSNode:
         """
         return max(self.children, key=lambda c: c.visits)
 
-    def expand(self):
+    def expand(self, transposition_table):
         """
-        Expansion phase: pick one untried action, create its child node, add it to children, and return it.
+        Expansion phase: pick one untried action, create its child node,
+        add it to children, and return it.
+
+        Before creating a new node, check if this state hash already exists in the transposution table.
+        If yes, copy over its  statistics (visits, wins, untried_actions).
+
+        Parameters
+        ----------
+        transposition_table : dict mapping hash (int) -> MCTSNode
+
+        Returns
+        -------
+        MCTSNode : the newly created child node
         """
-        action = self.untried_actions.pop()   # pick an action still available
-        next_state = self.state.copy() # copy to not change the current node's state when we apply the action
+
+        action = self.untried_actions.pop()
+        next_state = self.state.copy()
         Game.apply(next_state, action)
 
         child = MCTSNode(
@@ -99,6 +150,16 @@ class MCTSNode:
             action = action,
             player = Game.to_move(self.state)     # the player who just moved
         )
+
+        if child.hash in transposition_table:
+            existing = transposition_table[child.hash]
+            child.visits = existing.visits
+            child.wins = existing.wins
+            # Ne PAS copier untried_actions : Copier une liste vide rendrait ce
+            # noeud immédiatement "fully expanded" sans aucun enfant.
+        else:
+            transposition_table[child.hash] = child
+
         self.children.append(child)
         return child
 
@@ -110,7 +171,11 @@ class MCTSAgent(Agent):
     Each call to act() runs as many MCTS iterations as possible within the allowed time, then returns the action of the
     most-visited child of the root.
 
-    #TODO-> add time variation for better search (like for minimax/alphabeta agents)
+    UCT (Upper Confidence bound for Trees) is MCTS using UCB1 as the tree policy during selection
+    (standard version of MCTS.) -> add in report
+
+    Improvements over the basic version:
+        - Transposition table: reuse statistics for states reached via different move sequences (Zobrist hashing).
 
     4 phases for each iteration :
         1. Selection   : walk the tree using UCB1 until finding a a non-fully-expanded or terminal node.
@@ -121,6 +186,9 @@ class MCTSAgent(Agent):
 
     def __init__(self, player):
         super().__init__(player)
+
+        self.transposition_table = {}
+
 
     def act(self, state, remaining_time):
         """
@@ -135,8 +203,16 @@ class MCTSAgent(Agent):
         -------
         tuple : the action of the most-visited child of the root
         """
+        # if first time, set the time allowed per move by dividing the remaining time by the number of moves possible (34 -> 36 - 2 last plays)
+        # TODO -> better time allocation ?
+        TIME_PER_MOVE = max(MINIMUM_TIME_PER_MOVE, remaining_time * TIME_PERCENT_OF_REMAINING) # at least 1 second per move, or 5% of remaining time if more
+
+
+
         # Build the root node for this turn
         root = MCTSNode(state=state.copy(), parent=None, action=None, player=None)
+        if root.hash not in self.transposition_table:
+            self.transposition_table[root.hash] = root
 
         # Time allowed for this move
         # limit somehow to avoid timeout -> laer when testing with more time per move
@@ -159,12 +235,15 @@ class MCTSAgent(Agent):
         # Walk down the tree choosing the child with the best UCB1, until node not fully expanded or is terminal.
         node = root
         while node.is_fully_expanded() and not node.is_terminal():
-            node = node.best_child()
+            best = node.best_child()
+            if best is None:  # noeud marqué fully expanded mais sans enfants
+                break  # on l'expand normalement ci-dessous
+            node = best
 
         # Expansion
         # If the node is not terminal and has remaining actions possible, expand one node
         if not node.is_terminal():
-            node = node.expand()
+            node = node.expand(self.transposition_table)
 
         # Simulation
         # From that node, play random moves until the game ends.
@@ -183,7 +262,7 @@ class MCTSAgent(Agent):
 
         Parameters
         ----------
-        state : the state to simulate from (will be modified in place)
+        state : the state to simulate from
 
         Returns
         -------
@@ -206,6 +285,8 @@ class MCTSAgent(Agent):
         go from current node back to the root, incrementing visits at every node and incrementing wins when the
         node's player matches the winner from simulation.
 
+        Keeps the transposition table entry synchronized : after updating a node's statistics, we update the stored entry
+
         Parameters
         ----------
         node   : the node where simulation started
@@ -220,5 +301,11 @@ class MCTSAgent(Agent):
                     node.wins += 1
                 elif node.player != self.player and result == -1:
                     node.wins += 1
+
+            # Keep the transposition table entry up to date.
+            if node.hash in self.transposition_table:
+                table_entry = self.transposition_table[node.hash]
+                table_entry.visits = node.visits # -> use max between values from node and table_entry ? -> check
+                table_entry.wins = node.wins
 
             node = node.parent
