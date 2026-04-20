@@ -11,7 +11,7 @@ from oxono import Game
 #TODO -> other fixed times
 #TODO -> dynamic time allocation
 TIME_PER_MOVE = 1.0
-# how to get the max time allowed? -> through act() ?
+# how to get the max time allowed? -> defined in the first act() call
 
 
 
