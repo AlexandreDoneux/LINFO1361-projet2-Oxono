@@ -1,8 +1,11 @@
 from agent import Agent
 from oxono import Game
+from agent import Agent
+from oxono import Game
+import time
 
-# Depth limit for Alpha-Beta search.
-SEARCH_DEPTH = 4
+class TimeoutException(Exception):
+    pass
 
 class AlphaBetaAgent(Agent):
     """
@@ -37,46 +40,66 @@ class AlphaBetaAgent(Agent):
         # initialisation de la table de transposition
         self.transposition_table = {}
 
+    
+
     def act(self, state, remaining_time):
-
-        # vide la table de transposition a chaque tour.
-        # évite de dépasser la mémoire
+        # gestion du temps
+        self.start_time = time.time()
+        self.time_limit = time_function(state, remaining_time)
+        
+        # nétoyage de la table de transposition pour ne pas saturer la mémoire 
         self.transposition_table.clear()
-
-        # On récupère la profondeur max 
-        depth_limit = adapt_depth(state, remaining_time)
+        # garde en mémoire le meilleur mouvement de la profondeur suivante
+        best_move_overall = None
         
-        best_move = None
-        best_score = float('-inf')
-        alpha = float('-inf')
-        beta = float('inf')
+        try:
+            for depth in range(2, 20, 2): 
+                alpha = float('-inf')
+                beta = float('inf')
+                best_score = float('-inf')
+                best_move_for_this_depth = None
+                
+                # On trie les actions à la racine
+                actions = self.order_moves(state, True)
 
-        
-        # boucle sur tous les coups possibles
-        actions = self.order_moves(state, True)
-        for action in actions:
-            next_state = state.copy()
-            self.game.apply(next_state, action)
+                # on essaye en premier le meilleur coup trouvé de l'itération d'avant
+                if best_move_overall in actions:
+                    actions.remove(best_move_overall)
+                    actions.insert(0, best_move_overall)
 
-            if self.game.is_terminal(next_state):
-                return action
-            
-            # On lance l'algorithme alpha-beta pour chaque coup
-            score = self.alphabeta(next_state, depth_limit - 1, alpha, beta, False)
-            
-            # si un coup a une meilleur évaluation que best_move, on remplace best_move par ce coup
-            if score > best_score:
-                best_score = score
-                best_move = action
-            
-            alpha = max(alpha, score) # on met a jour la borne si on a un meilleur coup
-            
-        return best_move
+                for action in actions:
+                    # Vérification du temps
+                    if time.time() - self.start_time > self.time_limit:
+                        raise TimeoutException()
 
+                    next_state = state.copy()
+                    self.game.apply(next_state, action)
+                    
+                    if self.game.is_terminal(next_state) and self.game.utility(next_state, self.player) == 1:
+                        return action # Victoire immédiate
+                    
+                    # On lance la recherche
+                    score = self.alphabeta(next_state, depth - 1, alpha, beta, False)
+                    
+                    if score > best_score:
+                        best_score = score
+                        best_move_for_this_depth = action
+                    
+                    alpha = max(alpha, score)
+                
+                best_move_overall = best_move_for_this_depth
+
+        except TimeoutException:
+            print(f" tour {number_of_plays(state)} : profondeur {depth}")
+            pass # on sort de la boucle
+            
+        return best_move_overall
+    
     # donne une clé unique pour un état
     def get_transposition_key(self, state):
+        board_tuple = tuple(tuple(row) for row in state.board)
         return (
-            str(state.board), 
+            board_tuple, 
             self.game.to_move(state),
             state.totem_O,
             state.totem_X
@@ -84,6 +107,10 @@ class AlphaBetaAgent(Agent):
 
     """algorithme alpha-beta"""
     def alphabeta(self, state, depth, alpha, beta, maximizingPlayer):
+
+        # verification du temps
+        if time.time() - self.start_time > self.time_limit:
+            raise TimeoutException()
 
         # calcule la clé du dictionnaire de l'état
         state_key = self.get_transposition_key(state)
@@ -116,7 +143,7 @@ class AlphaBetaAgent(Agent):
         # c'est à nous de jouer
         if maximizingPlayer:
             best_val = float('-inf')
-            for action in self.order_moves(state, maximizingPlayer):
+            for action in self.game.actions(state):
                 # on joue le coup
                 next_state = state.copy()
                 self.game.apply(next_state, action)
@@ -131,7 +158,7 @@ class AlphaBetaAgent(Agent):
         # c'est à l'adversaire de jouer 
         else:
             best_val = float('inf')
-            for action in self.order_moves(state, maximizingPlayer):
+            for action in self.game.actions(state):
                 next_state = state.copy()
                 self.game.apply(next_state, action)
                 
@@ -179,7 +206,7 @@ class AlphaBetaAgent(Agent):
         ]
         
         # fin de la partie --> avoir des lignes > placer les pieces au centre
-        center_multiplier = max(0.0, (25.0 - plays) / 25.0) # voir si 15 est un bon nombre ?? 
+        center_multiplier = max(0.0, (10.0 - plays) / 10.0) # voir si 15 est un bon nombre ?? 
                                                             # ca ne marche pas avec 15, mais ca marche mieux avec des valuers plus élevées. pourquoi ????
 
         for r in range(6):
@@ -188,9 +215,9 @@ class AlphaBetaAgent(Agent):
                 if cell is not None:
                     # cell[1] contient l'ID du joueur (0 ou 1)
                     if cell[1] == player:
-                        score += POSITION_WEIGHTS[r][c] * center_multiplier * 3.0
+                        score += POSITION_WEIGHTS[r][c] * center_multiplier 
                     else:
-                        score -= POSITION_WEIGHTS[r][c] * center_multiplier * 3.0
+                        score -= POSITION_WEIGHTS[r][c] * center_multiplier 
 
         """partie lignes de 4"""
 
@@ -208,11 +235,13 @@ class AlphaBetaAgent(Agent):
             score += val_p * mult_p
             score += val_o * mult_o
 
-            # pour les windows de symboles
-            # pour les windows de symboles
-            is_my_turn = (current_to_move == player)
+            # pour les windows de symboles  
+            mult = 1
+            if (current_to_move != player):
+                mult = -1
+            
             for symbol in ['X', 'O']:
-                score += score_symbol_window(window, symbol, is_my_turn)
+                score += mult*score_symbol_window(window, symbol)
         return score
     
     # ordonne les actions possibles en mettant les plus 
@@ -251,7 +280,7 @@ class AlphaBetaAgent(Agent):
             else:
                 others.append(action)
             
-        # collage des 2 listes 
+        # collage des 2 listes print(f"Tour {number_of_plays(state)} : Timeout atteint ! Profondeur max validée : {depth - 1}")
         return priority_moves + others
 
 
@@ -259,39 +288,22 @@ class AlphaBetaAgent(Agent):
 #################### fonctions auxiliaires #######################
 ##################################################################
 
-def adapt_depth(state, remaining_time):
-    "Ajustement dynamique mais avec des valeurs arbitraires pour l'instant, à améliorer"
-
-    played = number_of_plays(state)
-    print("adapt depth : ", played, remaining_time)
-
-    # si presque plus de temps, on doit pas perdre de temps
-    if remaining_time < 10:
-        return 3
-
-    # assez tôt, beaucoup de possibilités, on doit pas perdre de temps à explorer trop profondément
-    if played < 5:
-        print("early game")
-        return 5
-
-    # une fois plus de pièces posées, moins de possibilités. On peut rechercher plus en profondeur
-    if played < 24:
-        return 5
-
-    # vers la fin : peu de possibilités, on peut se permettre de rechercher plus en profondeur pour trouver le meilleur coup
-    if played > 30 :
-        return 7
-
-    return 5
-
+# gère la répartition du temps
+def time_function( state, remening_time):
+        round_number = number_of_plays(state)
+        if (round_number < 4):
+            return 5
+        if (round_number < 8):
+            return 20
+        return remening_time * 0.05
 
 def number_of_plays(state):
     return sum(1 for row in state.board for cell in row if cell is not None)
 
-# Attribue un score à une fenêtre selon le nombre de pieces de la bonne (mauvaise) couleur présentse.
+# Attribue un score à une fenêtre selon le nombre de pieces de la bonne (ou mauvaise) couleur présente.
 def score_color_window(window, color_player, sign):
     # Poids qui privilegie les lignes de 3
-    weights = {3: 20, 2: 2}
+    weights = {3: 10, 2: 1}
     opponent = 1 - color_player
 
     my_count = 0
@@ -308,42 +320,19 @@ def score_color_window(window, color_player, sign):
             empty_count += 1
 
     return sign * weights.get(my_count, 0)
-"""
+
+
 # Attribue un score à une fenêtre selon le nombre de symboles (X ou O) présents.
 def score_symbol_window(window, symbol):
-    # Les symboles ont moins de poids car tout le monde peut gagner avec
+
     weights = {3: 10, 2: 1}
     count = 0
     
     for cell in window:
-        if cell is not None and cell[0] == symbol:
-            count += 1
-            weights.get(count, 0)
-    
-    return weights.get(count, 0)  # le 2eme argument est la si jamais get ne trouve pas la valeur count dans le dico
-"""
-def score_symbol_window(window, symbol, is_my_turn):
-    count = 0
-    for cell in window:
-        if cell is not None:
+        if cell is not None :
             if cell[0] == symbol:
                 count += 1
             else:
-                # La ligne est bloquée par l'autre symbole (ex: un O bloque les X)
-                # Impossible de faire 4, la fenêtre vaut 0 !
-                return 0 
-                
-    if count == 3:
-        # MENACE OU OPPORTUNITÉ IMMINENTE
-        # Si c'est à moi de jouer, c'est une victoire (+20)
-        # Si c'est à l'adversaire, je vais perdre (-20)
-        return 100 if is_my_turn else -100
-        
-    elif count == 2:
-        # DÉVELOPPEMENT NORMAL
-        # On donne un petit bonus FIXE ET POSITIF (+1). 
-        # Ainsi, l'IA ne fuira jamais une ligne de 2, même si c'est au tour de l'adversaire.
-        # Cela l'encourage à construire et à rester au cœur du jeu !
-        return 2
-        
-    return 0
+                return 0 # La ligne est bloquée par l'adversaire 
+
+    return weights.get(count, 0)  # le 2eme argument est la si jamais get ne trouve pas la valeur count dans le dico
