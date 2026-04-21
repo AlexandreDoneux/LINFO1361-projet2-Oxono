@@ -104,7 +104,7 @@ class AlphaBetaAgent(Agent):
             state.totem_X
         )
 
-    """algorithme alpha-beta"""
+    # algorithme alpha-beta
     def alphabeta(self, state, depth, alpha, beta, maximizingPlayer):
 
         # verification du temps
@@ -219,7 +219,6 @@ class AlphaBetaAgent(Agent):
                         score -= POSITION_WEIGHTS[r][c] * center_multiplier 
 
         """partie lignes de 4"""
-
         for window_coords in self.windows:
             # on transforme la liste de coordonnées en liste de cell 
             window = [board[r][c] for r, c in window_coords]
@@ -279,7 +278,7 @@ class AlphaBetaAgent(Agent):
             else:
                 others.append(action)
             
-        # collage des 2 listes print(f"Tour {number_of_plays(state)} : Timeout atteint ! Profondeur max validée : {depth - 1}")
+        # collage des 2 listes
         return priority_moves + others
 
 
@@ -318,7 +317,7 @@ def score_color_window(window, color_player, sign):
         else:
             empty_count += 1
 
-    return sign * weights.get(my_count, 0)
+    return sign * weights.get(my_count, 0) # le 2eme argument est la si jamais get ne trouve pas la valeur count dans le dico
 
 
 # Attribue un score à une fenêtre selon le nombre de symboles (X ou O) présents.
@@ -334,4 +333,4 @@ def score_symbol_window(window, symbol):
             else:
                 return 0 # La ligne est bloquée par l'adversaire 
 
-    return weights.get(count, 0)  # le 2eme argument est la si jamais get ne trouve pas la valeur count dans le dico
+    return weights.get(count, 0) 
