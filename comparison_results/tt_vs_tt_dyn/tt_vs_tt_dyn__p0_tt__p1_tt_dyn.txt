@@ -1,0 +1,35 @@
+
+=== Temporary results over 1 game(s) ===
+  mcts/mcts_transposition_table.py wins:    0  (0.0%)
+  mcts/mcts_transposition_table_dynamic_time.py wins:    1  (100.0%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 2 game(s) ===
+  mcts/mcts_transposition_table.py wins:    0  (0.0%)
+  mcts/mcts_transposition_table_dynamic_time.py wins:    2  (100.0%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 3 game(s) ===
+  mcts/mcts_transposition_table.py wins:    0  (0.0%)
+  mcts/mcts_transposition_table_dynamic_time.py wins:    3  (100.0%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 4 game(s) ===
+  mcts/mcts_transposition_table.py wins:    0  (0.0%)
+  mcts/mcts_transposition_table_dynamic_time.py wins:    4  (100.0%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 5 game(s) ===
+  mcts/mcts_transposition_table.py wins:    0  (0.0%)
+  mcts/mcts_transposition_table_dynamic_time.py wins:    5  (100.0%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 6 game(s) ===
+  mcts/mcts_transposition_table.py wins:    1  (16.7%)
+  mcts/mcts_transposition_table_dynamic_time.py wins:    5  (83.3%)
+  Draws:                        0  (0.0%)
+
+=== Results over 7 game(s) ===
+  mcts/mcts_transposition_table.py wins:    1  (14.3%)
+  mcts/mcts_transposition_table_dynamic_time.py wins:    6  (85.7%)
+  Draws:                        0  (0.0%)

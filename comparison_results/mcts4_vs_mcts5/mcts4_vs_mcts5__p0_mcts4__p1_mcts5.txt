@@ -1,0 +1,100 @@
+
+=== Temporary results over 1 game(s) ===
+  mcts/mcts_4.py       wins:    1  (100.0%)
+  mcts/mcts_5.py       wins:    0  (0.0%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 2 game(s) ===
+  mcts/mcts_4.py       wins:    2  (100.0%)
+  mcts/mcts_5.py       wins:    0  (0.0%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 3 game(s) ===
+  mcts/mcts_4.py       wins:    3  (100.0%)
+  mcts/mcts_5.py       wins:    0  (0.0%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 4 game(s) ===
+  mcts/mcts_4.py       wins:    3  (75.0%)
+  mcts/mcts_5.py       wins:    1  (25.0%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 5 game(s) ===
+  mcts/mcts_4.py       wins:    3  (60.0%)
+  mcts/mcts_5.py       wins:    2  (40.0%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 6 game(s) ===
+  mcts/mcts_4.py       wins:    4  (66.7%)
+  mcts/mcts_5.py       wins:    2  (33.3%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 7 game(s) ===
+  mcts/mcts_4.py       wins:    4  (57.1%)
+  mcts/mcts_5.py       wins:    3  (42.9%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 8 game(s) ===
+  mcts/mcts_4.py       wins:    4  (50.0%)
+  mcts/mcts_5.py       wins:    4  (50.0%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 9 game(s) ===
+  mcts/mcts_4.py       wins:    5  (55.6%)
+  mcts/mcts_5.py       wins:    4  (44.4%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 10 game(s) ===
+  mcts/mcts_4.py       wins:    5  (50.0%)
+  mcts/mcts_5.py       wins:    5  (50.0%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 11 game(s) ===
+  mcts/mcts_4.py       wins:    6  (54.5%)
+  mcts/mcts_5.py       wins:    5  (45.5%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 12 game(s) ===
+  mcts/mcts_4.py       wins:    7  (58.3%)
+  mcts/mcts_5.py       wins:    5  (41.7%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 13 game(s) ===
+  mcts/mcts_4.py       wins:    8  (61.5%)
+  mcts/mcts_5.py       wins:    5  (38.5%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 14 game(s) ===
+  mcts/mcts_4.py       wins:    9  (64.3%)
+  mcts/mcts_5.py       wins:    5  (35.7%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 15 game(s) ===
+  mcts/mcts_4.py       wins:   10  (66.7%)
+  mcts/mcts_5.py       wins:    5  (33.3%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 16 game(s) ===
+  mcts/mcts_4.py       wins:   11  (68.8%)
+  mcts/mcts_5.py       wins:    5  (31.2%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 17 game(s) ===
+  mcts/mcts_4.py       wins:   11  (64.7%)
+  mcts/mcts_5.py       wins:    6  (35.3%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 18 game(s) ===
+  mcts/mcts_4.py       wins:   12  (66.7%)
+  mcts/mcts_5.py       wins:    6  (33.3%)
+  Draws:                        0  (0.0%)
+
+=== Temporary results over 19 game(s) ===
+  mcts/mcts_4.py       wins:   13  (68.4%)
+  mcts/mcts_5.py       wins:    6  (31.6%)
+  Draws:                        0  (0.0%)
+
+=== Results over 20 game(s) ===
+  mcts/mcts_4.py       wins:   14  (70.0%)
+  mcts/mcts_5.py       wins:    6  (30.0%)
+  Draws:                        0  (0.0%)

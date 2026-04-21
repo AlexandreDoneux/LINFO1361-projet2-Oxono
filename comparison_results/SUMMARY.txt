@@ -1,0 +1,237 @@
+============================================================
+MCTS Comparison Run — 2026-04-21 00:35:28
+Games per matchup: 20
+============================================================
+
+
+════ GROUP 1: Fixed-time ladder ════
+
+--- mcts/mcts_2.py (P0)  vs  mcts/mcts_3.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_2.py       wins:    7  (35.0%)
+  mcts/mcts_3.py       wins:   13  (65.0%)
+  Draws:                        0  (0.0%)
+
+--- mcts/mcts_3.py (P0)  vs  mcts/mcts_2.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_3.py       wins:    5  (25.0%)
+  mcts/mcts_2.py       wins:   15  (75.0%)
+  Draws:                        0  (0.0%)
+
+
+--- mcts/mcts_3.py (P0)  vs  mcts/mcts_4.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_3.py       wins:   11  (55.0%)
+  mcts/mcts_4.py       wins:    9  (45.0%)
+  Draws:                        0  (0.0%)
+
+--- mcts/mcts_4.py (P0)  vs  mcts/mcts_3.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_4.py       wins:   11  (55.0%)
+  mcts/mcts_3.py       wins:    9  (45.0%)
+  Draws:                        0  (0.0%)
+
+
+--- mcts/mcts_4.py (P0)  vs  mcts/mcts_5.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_4.py       wins:   14  (70.0%)
+  mcts/mcts_5.py       wins:    6  (30.0%)
+  Draws:                        0  (0.0%)
+
+--- mcts/mcts_5.py (P0)  vs  mcts/mcts_4.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_5.py       wins:   14  (70.0%)
+  mcts/mcts_4.py       wins:    6  (30.0%)
+  Draws:                        0  (0.0%)
+
+
+============================================================
+MCTS Comparison Run — 2026-04-21 02:47:35
+Games per matchup: 7
+============================================================
+
+
+════ GROUP 1: Fixed-time ladder ════
+
+--- mcts/mcts_5.py (P0)  vs  mcts/mcts_6.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_5.py       wins:    4  (57.1%)
+  mcts/mcts_6.py       wins:    3  (42.9%)
+  Draws:                        0  (0.0%)
+
+--- mcts/mcts_6.py (P0)  vs  mcts/mcts_5.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_6.py       wins:    1  (14.3%)
+  mcts/mcts_5.py       wins:    6  (85.7%)
+  Draws:                        0  (0.0%)
+
+
+--- mcts/mcts_6.py (P0)  vs  mcts/mcts_7.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_6.py       wins:    3  (42.9%)
+  mcts/mcts_7.py       wins:    4  (57.1%)
+  Draws:                        0  (0.0%)
+
+--- mcts/mcts_7.py (P0)  vs  mcts/mcts_6.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_7.py       wins:    4  (57.1%)
+  mcts/mcts_6.py       wins:    3  (42.9%)
+  Draws:                        0  (0.0%)
+
+
+--- mcts/mcts_7.py (P0)  vs  mcts/mcts_8.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_7.py       wins:    2  (28.6%)
+  mcts/mcts_8.py       wins:    5  (71.4%)
+  Draws:                        0  (0.0%)
+
+--- mcts/mcts_8.py (P0)  vs  mcts/mcts_7.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_8.py       wins:    5  (71.4%)
+  mcts/mcts_7.py       wins:    2  (28.6%)
+  Draws:                        0  (0.0%)
+
+
+
+════ GROUP 2: TT vs fixed-time agents ════
+
+--- mcts/mcts_transposition_table.py (P0)  vs  mcts/mcts_6.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_transposition_table.py wins:    5  (71.4%)
+  mcts/mcts_6.py       wins:    2  (28.6%)
+  Draws:                        0  (0.0%)
+
+--- mcts/mcts_6.py (P0)  vs  mcts/mcts_transposition_table.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_6.py       wins:    4  (57.1%)
+  mcts/mcts_transposition_table.py wins:    3  (42.9%)
+  Draws:                        0  (0.0%)
+
+
+--- mcts/mcts_transposition_table.py (P0)  vs  mcts/mcts_8.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_transposition_table.py wins:    6  (85.7%)
+  mcts/mcts_8.py       wins:    1  (14.3%)
+  Draws:                        0  (0.0%)
+
+--- mcts/mcts_8.py (P0)  vs  mcts/mcts_transposition_table.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_8.py       wins:    3  (42.9%)
+  mcts/mcts_transposition_table.py wins:    4  (57.1%)
+  Draws:                        0  (0.0%)
+
+
+
+════ GROUP 3: TT+Dynamic vs fixed-time agents ════
+
+--- mcts/mcts_transposition_table_dynamic_time.py (P0)  vs  mcts/mcts_6.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_transposition_table_dynamic_time.py wins:    4  (57.1%)
+  mcts/mcts_6.py       wins:    3  (42.9%)
+  Draws:                        0  (0.0%)
+
+--- mcts/mcts_6.py (P0)  vs  mcts/mcts_transposition_table_dynamic_time.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_6.py       wins:    2  (28.6%)
+  mcts/mcts_transposition_table_dynamic_time.py wins:    5  (71.4%)
+  Draws:                        0  (0.0%)
+
+
+--- mcts/mcts_transposition_table_dynamic_time.py (P0)  vs  mcts/mcts_8.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_transposition_table_dynamic_time.py wins:    6  (85.7%)
+  mcts/mcts_8.py       wins:    1  (14.3%)
+  Draws:                        0  (0.0%)
+
+--- mcts/mcts_8.py (P0)  vs  mcts/mcts_transposition_table_dynamic_time.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_8.py       wins:    6  (85.7%)
+  mcts/mcts_transposition_table_dynamic_time.py wins:    1  (14.3%)
+  Draws:                        0  (0.0%)
+
+
+
+════ GROUP 4: TT vs TT+Dynamic ════
+
+--- mcts/mcts_transposition_table.py (P0)  vs  mcts/mcts_transposition_table_dynamic_time.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_transposition_table.py wins:    1  (14.3%)
+  mcts/mcts_transposition_table_dynamic_time.py wins:    6  (85.7%)
+  Draws:                        0  (0.0%)
+
+--- mcts/mcts_transposition_table_dynamic_time.py (P0)  vs  mcts/mcts_transposition_table.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_transposition_table_dynamic_time.py wins:    4  (57.1%)
+  mcts/mcts_transposition_table.py wins:    3  (42.9%)
+  Draws:                        0  (0.0%)
+
+
+============================================================
+MCTS Comparison Run — 2026-04-21 10:55:09
+Games per matchup: 7
+============================================================
+
+
+════ GROUP 1: Fixed-time ladder ════
+
+
+════ GROUP 2: TT vs fixed-time agents ════
+
+--- mcts/mcts_transposition_table.py (P0)  vs  mcts/mcts_2.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_transposition_table.py wins:    6  (85.7%)
+  mcts/mcts_2.py       wins:    1  (14.3%)
+  Draws:                        0  (0.0%)
+
+--- mcts/mcts_2.py (P0)  vs  mcts/mcts_transposition_table.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_2.py       wins:    2  (28.6%)
+  mcts/mcts_transposition_table.py wins:    5  (71.4%)
+  Draws:                        0  (0.0%)
+
+
+--- mcts/mcts_transposition_table.py (P0)  vs  mcts/mcts_4.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_transposition_table.py wins:    6  (85.7%)
+  mcts/mcts_4.py       wins:    1  (14.3%)
+  Draws:                        0  (0.0%)
+
+--- mcts/mcts_4.py (P0)  vs  mcts/mcts_transposition_table.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_4.py       wins:    3  (42.9%)
+  mcts/mcts_transposition_table.py wins:    4  (57.1%)
+  Draws:                        0  (0.0%)
+
+
+
+════ GROUP 3: TT+Dynamic vs fixed-time agents ════
+
+--- mcts/mcts_transposition_table_dynamic_time.py (P0)  vs  mcts/mcts_2.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_transposition_table_dynamic_time.py wins:    6  (85.7%)
+  mcts/mcts_2.py       wins:    1  (14.3%)
+  Draws:                        0  (0.0%)
+
+--- mcts/mcts_2.py (P0)  vs  mcts/mcts_transposition_table_dynamic_time.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_2.py       wins:    1  (14.3%)
+  mcts/mcts_transposition_table_dynamic_time.py wins:    6  (85.7%)
+  Draws:                        0  (0.0%)
+
+
+--- mcts/mcts_transposition_table_dynamic_time.py (P0)  vs  mcts/mcts_4.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_transposition_table_dynamic_time.py wins:    6  (85.7%)
+  mcts/mcts_4.py       wins:    1  (14.3%)
+  Draws:                        0  (0.0%)
+
+--- mcts/mcts_4.py (P0)  vs  mcts/mcts_transposition_table_dynamic_time.py (P1) ---
+  Draws:                        0  (0.0%)
+  mcts/mcts_4.py       wins:    2  (28.6%)
+  mcts/mcts_transposition_table_dynamic_time.py wins:    5  (71.4%)
+  Draws:                        0  (0.0%)
+
+
+
+════ GROUP 4: TT vs TT+Dynamic ════
+

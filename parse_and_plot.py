@@ -302,7 +302,8 @@ def plot_tt_vs_tt_dyn(records, out_dir):
     #draws  = sum(r["draws"] for r in match)
     total  = sum(r["total"] for r in match)
 
-    labels = [short_name(a), short_name(b), "Draw"]
+    #labels = [short_name(a), short_name(b), "Draw"]
+    labels = [short_name(a), short_name(b)]
     #values = [100 * wins_a / total, 100 * wins_b / total, 100 * draws / total]
     values = [100 * wins_a / total, 100 * wins_b / total]
     #colors = [COLORS["loss"], COLORS["win"], COLORS["draw"]]
